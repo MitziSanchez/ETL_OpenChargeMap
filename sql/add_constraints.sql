@@ -29,3 +29,9 @@ FOREIGN KEY (operator_id) REFERENCES operators(operator_id)
 ALTER TABLE pois
 ADD CONSTRAINT fk_pois_countries
 FOREIGN KEY (country_id) REFERENCES countries(country_id)
+
+-- POIS -> STATUS TYPES
+ALTER TABLE pois
+ADD CONSTRAINT fk_pois_status_types
+FOREIGN KEY (status_type_id) REFERENCES status_types(status_type_id)
+
