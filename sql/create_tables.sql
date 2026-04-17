@@ -61,7 +61,7 @@ CREATE TABLE supply_types(
 CREATE TABLE countries(
 	country_id INT PRIMARY KEY,
 	name TEXT NOT NULL,
-	continent_code CHAR(2) NOT NULL,
+	continent_code CHAR(2),
 	iso_code CHAR(2) NOT NULL
 )
 
