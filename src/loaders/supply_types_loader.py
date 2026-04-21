@@ -27,7 +27,7 @@ def cargar_tipos_suministro():
     print(f"> Registros de suministro obtenidos: {len(t_sum)}")
 
     if len(t_sum) == 0:
-        print("> No se han encontrado registros. No se han insertado datos")
+        print("> No se han insertado datos")
 
     else:
 
@@ -56,7 +56,7 @@ def cargar_tipos_suministro():
             # Eliminar filas con id nulo
             df_t_sum = df_t_sum.dropna(subset=["ID"])
 
-            # Reemplazar filas con tittle nulo
+            # Reemplazar filas con title nulo
             df_t_sum["Title"] = df_t_sum["Title"].fillna("No informado") 
 
         print(f"> Total de registros limpios: {len(df_t_sum)}")
