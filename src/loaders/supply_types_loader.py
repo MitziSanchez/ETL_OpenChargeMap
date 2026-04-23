@@ -79,13 +79,15 @@ def cargar_bd(df_t_sum):
         conn = get_Connection()
         cursor = conn.cursor()
 
-        # Insertar registros
+        # Insertar registros, existentes se actualizan 
         for _, row in df_t_sum.iterrows():
             cursor.execute(
                 """
                 INSERT INTO supply_types(supply_type_id, name, description)
                 VALUES(%s, %s, %s)
-                ON CONFLICT(supply_type_id) DO NOTHING;
+                ON CONFLICT(supply_type_id) DO UPDATE SET 
+                    name = EXCLUDED.name,
+                    description = EXCLUDED.description;
                 """,
                 (row["ID"], row["Title"], row.get("Description"))
             )

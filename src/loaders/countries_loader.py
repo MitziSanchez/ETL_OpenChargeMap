@@ -80,13 +80,16 @@ def cargar_bd(df_paises):
         conn = get_Connection()
         cursor = conn.cursor()
 
-        # Insertar registros
+        # Insertar registros, actualiza los existentes
         for _, row in df_paises.iterrows():
             cursor.execute(
                 """
                 INSERT INTO countries (country_id, name, continent_code, iso_code)
                 VALUES (%s, %s, %s, %s)
-                ON CONFLICT(country_id) DO NOTHING;
+                ON CONFLICT(country_id) DO UPDATE SET 
+                    name = EXCLUDED.name,
+                    continent_code = EXCLUDED.continent_code,
+                    iso_code = EXCLUDED.iso_code;
                 """,
                 (row["ID"], row["Title"], row.get("ContinentCode"), row["ISOCode"])
             )

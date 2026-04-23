@@ -37,7 +37,7 @@ Se exploran los datos entregados por la api. Considera la revisión de la estruc
     - Estaciones de carga y puntos de conexion.
     - Operadores.
     - Tipos de conexiones, suministro y estados.
-    - Paises.
+    - Países.
 
 ### Modelo de datos es PostgreSQL
 Una vez explorados los datos y determinado el set necesario para el análisis, se define y construye el modelo de datos: 
@@ -65,6 +65,11 @@ Se debe tener en consideración la siguiente equivalendia de datos de la API con
 > Correspode al tipo de suministro de corriente eléctrica. <br>
 > API: CurrentTypes <br>
 > BD: supply_types <br>
+
+> **Países** <br>
+> Tipificación de países. <br>
+> API: Countries <br>
+> BD: countries <br>
 
 > **Pois** <br>
 > Puntos de interes. Estaciones de servicio con puntos de carga EVSE. <br>
