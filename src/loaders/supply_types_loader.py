@@ -45,13 +45,12 @@ def cargar_tipos_suministro():
         print(f"> Registros de suministro totales: {len(df_t_sum)}")  
 
         # Revisar valores nulos
-        col_obligatorias = ["ID","Title"]
-
-        filas_nulos_ob = df_t_sum[col_obligatorias].isnull().any(axis=1).sum()
-        print(f"> Valores nulos en columnas obligatorias: {filas_nulos_ob}")
+        col_criticas = ["ID","Title"]
+        filas_nulos = df_t_sum[col_criticas].isnull().any(axis=1).sum()
+        print(f"> Valores nulos en columnas criticas: {filas_nulos}")
 
         # Si existen filas con nulos, transforma
-        if filas_nulos_ob > 0:
+        if filas_nulos > 0:
 
             # Eliminar filas con id nulo
             df_t_sum = df_t_sum.dropna(subset=["ID"])

@@ -1,4 +1,6 @@
+# =======================================================
 # Obtener operadores de la data referencial
+# =======================================================
 
 import requests
 import json
@@ -44,12 +46,12 @@ def cargar_operadores():
         print(f"> Registros de operadores totales: {len(df_operadores)}")  
 
         # Revisar nulos 
-        col_obligatorias = ["ID","Title"]
-        filas_nulos_ob = df_operadores[col_obligatorias].isnull().any(axis=1).sum()
-        print(f"> Valores nulos en columnas obligatorias: {filas_nulos_ob}")
+        col_criticas = ["ID","Title"]
+        filas_nulos = df_operadores[col_criticas].isnull().any(axis=1).sum()
+        print(f"> Valores nulos en columnas criticas: {filas_nulos}")
 
         # Si existen filas con valores nulos
-        if filas_nulos_ob > 0:
+        if filas_nulos > 0:
 
             # Eliminar filas con ID nulo
             df_operadores = df_operadores.dropna(subset=["ID"])
