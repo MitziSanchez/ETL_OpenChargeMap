@@ -9,7 +9,7 @@ import pandas as pd
 
 def cargar_operadores():
 
-    print("\nOBTENER DATOS DE OPERADORES DESDE API---------------") 
+    print("\nOBTENER OPERADORES DESDE API---------------") 
 
     # Obtener datos de la API
     url_ref = API_URL_REF
@@ -48,7 +48,7 @@ def cargar_operadores():
         # Revisar nulos 
         col_criticas = ["ID","Title"]
         filas_nulos = df_operadores[col_criticas].isnull().any(axis=1).sum()
-        print(f"> Valores nulos en columnas criticas: {filas_nulos}")
+        print(f"> Valores nulos en columnas críticas: {filas_nulos}")
 
         # Si existen filas con valores nulos
         if filas_nulos > 0:
@@ -59,8 +59,10 @@ def cargar_operadores():
             # Reemplazar valores nulos en title
             df_operadores["Title"] = df_operadores["Title"].fillna("No informado")    
 
-        # Reemplazar valores nulos en websiteURL por valores vacios
-        df_operadores["WebsiteURL"] = df_operadores["WebsiteURL"].fillna("")                           
+        # Definir nulos reconocibles para WebsiteURL
+        df_operadores["WebsiteURL"] = df_operadores["WebsiteURL"].astype(object).where(
+            pd.notnull(df_operadores["WebsiteURL"]), None
+        )                          
         
         print(f"> Total de registros limpios: {len(df_operadores)}")
         # print(df_operadores.head())
@@ -75,9 +77,9 @@ def cargar_bd(df_operadores):
     cursor = None
 
     try:
-        print("> Inicia proceso insercion a base de datos")
+        print("> Inicia proceso inserción a base de datos")
 
-        # Obtener conexion 
+        # Obtener conexión 
         conn = get_Connection()
         cursor = conn.cursor()
 
@@ -97,21 +99,21 @@ def cargar_bd(df_operadores):
    
         # Confirmar cambios
         conn.commit()
-        print("> Insercion de datos a PostgreSQL realizada")
+        print("> Inserción de datos a PostgreSQL realizada")
 
     except Exception as e:
         print(f"X Ha ocurrido un error: {e}")
 
-        # Si esta la conexion, aplica rollback
+        # Si esta la conexión, aplica rollback
         if conn:
             conn.rollback()
 
     finally:
-        #Cerrar conexion
+        #Cerrar conexión
         if cursor:
             cursor.close()
 
         if conn:
             conn.close()
 
-        print("> Conexion cerrada")
+        print("> Conexión cerrada")

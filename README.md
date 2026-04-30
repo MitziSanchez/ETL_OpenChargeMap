@@ -28,22 +28,20 @@ conda create -n etl_openchargemap python=3.11
 conda activate openchargemap
 ```
 
-> [!NOTE]
-> Descargar las librerias necesarias considerando el archivo `requeriments.py`
-
 ### Estructura del proyecto
 - `.env`: Archivo que contiene las variables de entorno del proyecto. En el repositorio se encuentra con nombre **.env.example**. 
 - `sql`: Carpeta contenedora de los scripts sql necesarios para contruir la base de datos en PostgreSQL.
 - `src`: Carpeta contenedora de los archivos del proyecto.
     - `api_exploracion.ipynb`: Jupiter Notebook, obtención de los datos, transformaciones y limpiezas exploratorias.
     - `config.py`: Archivo python con las configuraciones necesarias para el proyecto. (Obtención de variables de entorno y conexión de base de datos)
+    - `models.py`: Archivo que contiene la definición de clases que representan tablas de la base de datos. Utilizada por la librería sqlalchemy.
     - `loaders`: Carpeta contenedora de los archivos python de carga de las distintas entidades / tablas. Considera un archivo por cada una para mantener modularidad.
 
 > [!NOTE]
 > Para la ejecución del proyecto se debe considerar renombrar o generar el archivo `.env` en base a `.env.example` considerando los valores de variables que poseas.
 
 ### Conexión y exploración de datos de API Open Charge Map
-Generación de un Jupyter notebook, archivo `api_exploracion.ipynb` para exploración de los datos entregados por la API. Se revisa la estructura Y se aplican limpiezas y transformaciones.
+Generación de un Jupyter notebook, archivo `api_exploracion.ipynb` para exploración de los datos entregados por la API. Se revisa la estructura y se aplican limpiezas y transformaciones generales.
 - Extracción de los puntos de interés o estaciones de carga (POI) y sus conexiones disponibles en Chile.
 - Extracción de datos de referencia:
     - Estaciones de carga y puntos de conexion.
@@ -98,10 +96,17 @@ Se aplica limpieza de datos considerando principalmente lo siguiente:
 - Revisión de duplicados por clave primaria (Eliminación de filas duplicadas).
 - Revisión de valores nulos:
     - ID (Eliminación de filas)
-    - Otros datos (reemplazo de valores)
+    - Otros datos (reemplazo de valores) o configuración para reconocimiento de valores nulos.
+- Cambios de tipo de datos (algunos casos).
 
 ### Inserción de datos a BD PostgreSQL
-Para los datos referenciales se realiza la inserción utilizando la líbreria `psycopg2`, mientras que para los datos de puntos de carga y sus conexiones se utiliza `sqlalchemy`.
+El proyecto considera el almacenamiento de los datos utilizando 2 formas distintas, de tal forma de poder tener una visión de como trabajar con ambas librerías:
+- Para los datos referenciales se realiza la inserción utilizando la librería `psycopg2`.
+- Para los datos de puntos de carga y sus conexiones se utiliza `sqlalchemy`.
+
+
+> ![NOTE]
+> Las inserciones a la base de datos se realizan fila por fila. Ya que se necesita considerar el reemplazo de las filas ya existentes.
 
 
 

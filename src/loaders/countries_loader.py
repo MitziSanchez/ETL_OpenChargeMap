@@ -9,7 +9,7 @@ import pandas as pd
 
 def cargar_paises():
         
-    print("\nOBTENER DATOS DE PAISES DESDE API---------------") 
+    print("\nOBTENER PAÍSES DESDE API---------------") 
 
     # Obtener datos de la API
     url_ref = API_URL_REF
@@ -24,7 +24,7 @@ def cargar_paises():
 
     #print("\nPaises[0]:")
     #print(json.dumps(paises[0], indent=4)) 
-    print(f"> Registros de paises obtenidos: {len(paises)}")
+    print(f"> Registros de países obtenidos: {len(paises)}")
 
     if len(paises) == 0:
         print("> No se han insertado datos")
@@ -41,12 +41,12 @@ def cargar_paises():
         if filas_duplicadas > 0:
             df_paises = df_paises.drop_duplicates(subset=["ID"])
             
-        print(f"> Registros de paises totales: {len(df_paises)}")  
+        print(f"> Registros de países totales: {len(df_paises)}")  
 
         # Revisar nulos 
         col_criticas = ["ID","Title","ISOCode"]
         filas_nulos = df_paises[col_criticas].isnull().any(axis=1).sum()
-        print(f"> Valores nulos en columnas criticas: {filas_nulos}")
+        print(f"> Valores nulos en columnas críticas: {filas_nulos}")
 
         # Si existen filas con valores nulos
         if filas_nulos > 0:
@@ -59,9 +59,11 @@ def cargar_paises():
 
             # Reemplazar valores nulos en Iso Code, valor en blanco
             df_paises["ISOCode"] = df_paises["ISOCode"].fillna("") 
-
-        # Reemplazar valores nulos en continentCode, valor en blanco. BD permite nulos, pero se optara por reemplazar valores
-        df_paises["ContinentCode"] = df_paises["ContinentCode"].fillna("")               
+        
+        # Definir nulos reconocibles para ContinentCode
+        df_paises["ContinentCode"] = df_paises["ContinentCode"].astype(object).where(
+            pd.notnull(df_paises["ContinentCode"]), None
+        )              
         
         print(f"> Total de registros limpios: {len(df_paises)}")
         # print(df_paises.head())
@@ -76,7 +78,7 @@ def cargar_bd(df_paises):
     cursor = None
 
     try:
-        print("> Inicia proceso insercion a base de datos")
+        print("> Inicia proceso inserción a base de datos")
 
         # Obtener conexion 
         conn = get_Connection()
@@ -98,24 +100,24 @@ def cargar_bd(df_paises):
    
         # Confirmar cambios
         conn.commit()
-        print("> Insercion de datos a PostgreSQL realizada")
+        print("> Inserción de datos a PostgreSQL realizada")
 
     except Exception as e:
         print(f"X Ha ocurrido un error: {e}")
 
-        # Si esta la conexion, aplica rollback
+        # Si esta la conexión, aplica rollback
         if conn:
             conn.rollback()
 
     finally:
-        #Cerrar conexion
+        # Cerrar conexión
         if cursor:
             cursor.close()
 
         if conn:
             conn.close()
 
-        print("> Conexion cerrada")
+        print("> Conexión cerrada")
         
     
     

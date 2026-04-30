@@ -9,7 +9,7 @@ import pandas as pd
 
 def cargar_tipos_suministro():
         
-    print("\nOBTENER DATOS DE TIPOS DE SUMINISTRO DESDE API---------------") 
+    print("\nOBTENER TIPOS DE SUMINISTRO DESDE API---------------") 
 
     # Obtener datos de la API
     url_ref = API_URL_REF
@@ -47,7 +47,7 @@ def cargar_tipos_suministro():
         # Revisar valores nulos
         col_criticas = ["ID","Title"]
         filas_nulos = df_t_sum[col_criticas].isnull().any(axis=1).sum()
-        print(f"> Valores nulos en columnas criticas: {filas_nulos}")
+        print(f"> Valores nulos en columnas críticas: {filas_nulos}")
 
         # Si existen filas con nulos, transforma
         if filas_nulos > 0:
@@ -57,6 +57,11 @@ def cargar_tipos_suministro():
 
             # Reemplazar filas con title nulo
             df_t_sum["Title"] = df_t_sum["Title"].fillna("No informado") 
+
+        # Definir nulos reconocibles para Description
+        df_t_sum["Description"] = df_t_sum["Description"].astype(object).where(
+            pd.notnull(df_t_sum["Description"]), None
+        )
 
         print(f"> Total de registros limpios: {len(df_t_sum)}")
         # print(df_t_sum.head())
@@ -73,8 +78,8 @@ def cargar_bd(df_t_sum):
 
     try:
 
-        print("> Inicia proceso insercion a base de datos")
-        # Obtener conexion
+        print("> Inicia proceso inserción a base de datos")
+        # Obtener conexión
         conn = get_Connection()
         cursor = conn.cursor()
 
@@ -93,24 +98,24 @@ def cargar_bd(df_t_sum):
 
         # Confirmar cambios
         conn.commit()
-        print("> Insercion de datos a PostgreSQL realizada")
+        print("> Inserción de datos a PostgreSQL realizada")
 
     except Exception as e:
         print(f"X Ha ocurrido un error: {e}")
 
-        # Si esta la conexion, aplica rollback
+        # Si esta la conexión, aplica rollback
         if conn:
             conn.rollback()
 
     finally:
-        #Cerrar conexion
+        #Cerrar conexión
         if cursor:
             cursor.close()
 
         if conn:
             conn.close()
 
-        print("> Conexion cerrada")
+        print("> Conexión cerrada")
         
 
     

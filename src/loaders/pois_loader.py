@@ -4,12 +4,13 @@
 
 import requests
 import json
-from src.config import API_KEY, API_URL_POI, get_engine, get_session
+from src.config import API_KEY, API_URL_POI, get_session
 import pandas as pd 
+from src.models import Poi
 
 def cargar_pois():
 
-    print("\nOBTENER DATOS DE POIS DESDE API---------------") 
+    print("\nOBTENER POIS DESDE API---------------") 
 
     # Obtener datos de la API - POIS EN CHILE, PAIS ID 49
     url_poi = API_URL_POI
@@ -70,7 +71,7 @@ def cargar_pois():
             "StatusTypeID"     
         ]
         filas_nulos = df_pois[col_criticas].isnull().any(axis=1).sum()
-        print(f"> Valores nulos en columnas criticas: {filas_nulos}")
+        print(f"> Valores nulos en columnas críticas: {filas_nulos}")
 
         # Si existen filas con valores nulos
         if filas_nulos > 0:
@@ -102,46 +103,52 @@ def cargar_pois():
         # Eliminar las columnas concatenadas
         df_pois = df_pois.drop(columns = ["AddressInfo.AddressLine1","AddressInfo.AddressLine2"])  
 
+        # Reemplazar valores nan por none en todo el dataframe. Para el resto de columnas pueden ser nulas        
+        df_pois = df_pois.astype(object).where(pd.notnull(df_pois), None)   
+
         print(f"> Total de registros limpios: {len(df_pois)}")
-        # print(df_pois.head())
+        # print(df_pois.head())       
 
-        # Cambiar nombre de columnas
-        df_pois = df_pois.rename(columns = {
-            "ID": "poi_id",
-            "AddressInfo.Title": "name",
-            "OperatorID": "operator_id",
-            "AddressInfo.CountryID": "country_id",
-            "AddressInfo.StateOrProvince": "state_or_province",
-            "AddressInfo.Town": "town",
-            "Address": "address",            
-            "AddressInfo.Latitude": "latitude",
-            "AddressInfo.Longitude": "longitude",            
-            "StatusTypeID": "status_type_id"
-        })
-
-        # print(df_pois.head())
         cargar_bd(df_pois)
 
 
 def cargar_bd(df_pois):
 
     # Cargar a bd utilizando libreria SQLAlchemy
-    try:
-        print("> Inicia proceso insercion a base de datos")
 
-        # obtener el engine
-        engine = get_engine()
+    try:
+        print("> Inicia proceso inserción a base de datos")
+         
+        session = get_session()
 
         # Insertar dataframe en la tabla pois, se usara insercion fila a fila, ya que se controlara reemplazos de filas existentes
-       
+        for _, row in df_pois.iterrows():
+            poi = Poi(
+                poi_id = row["ID"],
+                name = row["AddressInfo.Title"],
+                operator_id = row["OperatorID"],
+                country_id = row["AddressInfo.CountryID"],
+                state_or_province = row["AddressInfo.StateOrProvince"],
+                town = row["AddressInfo.Town"],
+                address = row["Address"],
+                latitude = row["AddressInfo.Latitude"],
+                longitude = row["AddressInfo.Longitude"],
+                status_type_id = row["StatusTypeID"]
+            )
+
+            # Inserta o actualiza si el registro ya existe
+            session.merge(poi)
         
-        print("> Insercion de datos a PostgreSQL realizada")
+        session.commit()
+        print("> Inserción de datos a PostgreSQL realizada")
 
     except Exception as e:
+        session.rollback()
         print(f"X Ha ocurrido un error: {e}")
 
     finally:
-        #Cerrar conexion
-      
+        #Cerrar conexión
+        if session:
+            session.close()
 
-        print("> Conexion cerrada")
+        print("> Conexión cerrada")

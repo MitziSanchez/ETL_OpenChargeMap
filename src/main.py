@@ -5,18 +5,20 @@ from src.loaders.operators_loader import cargar_operadores
 from src.loaders.connection_types_loader import cargar_tipos_conexiones
 from src.loaders.status_types_loader import cargar_tipos_estados
 from src.loaders.pois_loader import cargar_pois
+from src.loaders.connections_loader import cargar_conexiones
 
 def etl_main():
     
     # Data referencial
-    # cargar_paises()
-    # cargar_tipos_suministro()
-    # cargar_operadores()
-    # cargar_tipos_conexiones()
-    #cargar_tipos_estados()
+    cargar_paises()
+    cargar_tipos_suministro()
+    cargar_operadores()
+    cargar_tipos_conexiones()
+    cargar_tipos_estados()
 
     # Datos principales
     cargar_pois()
+    cargar_conexiones()
 
 # Ejecutar 
 if __name__ == "__main__":

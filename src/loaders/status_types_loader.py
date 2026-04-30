@@ -9,7 +9,7 @@ import pandas as pd
 
 def cargar_tipos_estados():
 
-    print("\nOBTENER DATOS DE TIPOS DE ESTADOS DESDE API---------------") 
+    print("\nOBTENER TIPOS DE ESTADOS DESDE API---------------") 
 
     # Obtener datos de la API
     url_ref = API_URL_REF
@@ -48,7 +48,7 @@ def cargar_tipos_estados():
         # Revisar nulos 
         col_criticas = ["ID","Title"]
         filas_nulos = df_tipos_estados[col_criticas].isnull().any(axis=1).sum()
-        print(f"> Valores nulos en columnas criticas: {filas_nulos}")
+        print(f"> Valores nulos en columnas críticas: {filas_nulos}")
 
         # Si existen filas con valores nulos
         if filas_nulos > 0:
@@ -72,9 +72,9 @@ def cargar_bd(df_tipos_estados):
     cursor = None
 
     try:
-        print("> Inicia proceso insercion a base de datos")
+        print("> Inicia proceso inserción a base de datos")
 
-        # Obtener conexion 
+        # Obtener conexión 
         conn = get_Connection()
         cursor = conn.cursor()
 
@@ -92,21 +92,21 @@ def cargar_bd(df_tipos_estados):
    
         # Confirmar cambios
         conn.commit()
-        print("> Insercion de datos a PostgreSQL realizada")
+        print("> Inserción de datos a PostgreSQL realizada")
 
     except Exception as e:
         print(f"X Ha ocurrido un error: {e}")
 
-        # Si esta la conexion, aplica rollback
+        # Si esta la conexión, aplica rollback
         if conn:
             conn.rollback()
 
     finally:
-        #Cerrar conexion
+        #Cerrar conexión
         if cursor:
             cursor.close()
 
         if conn:
             conn.close()
 
-        print("> Conexion cerrada")
+        print("> Conexión cerrada")
